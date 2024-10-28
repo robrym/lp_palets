@@ -18,7 +18,7 @@
       <!-- Logo -->
       <a class="link-fx fw-bold" href="index.php">
         <i class="fa fa-fire text-primary"></i>
-        <span class="fs-4 text-dual">Palop</span><span class="fs-4 text-black"> Asesores</span>
+        <span class="fs-4 text-dual">Lopherca</span>
       </a>
       <!-- END Logo -->
 

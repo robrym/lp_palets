@@ -22,7 +22,7 @@
         <div class="py-4 text-center text-md-start">
           <a class="link-fx fw-bold" href="index.php">
             <i class="fa fa-fire"></i>
-            <span class="fs-4 text-body-color">Palop</span><span class="fs-4 text-body-color"> Asesores</span>
+            <span class="fs-4 text-body-color">Lopherca</span>
           </a>
           <div class="mb-4 mt-5">
             <i class="si si-lock-open fa-3x"></i>

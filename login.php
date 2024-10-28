@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($username) && !empty($password)) {
         try {
             // Preparar la consulta para evitar inyecciones SQL
-            $stmt = $conexion->prepare("SELECT id, nombre, email, password, perfil FROM usuarios WHERE email = :email LIMIT 1");
+            $stmt = $conexion->prepare("SELECT id, nombre, email, password, nivel_permiso FROM usuarios WHERE email = :email LIMIT 1");
             $stmt->bindParam(':email', $username);
             $stmt->execute();
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     // Establecer las variables de sesión
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['nombre'];
-                    $_SESSION['user_profile'] = $user['perfil'];
+                    $_SESSION['user_profile'] = $user['nivel_permiso'];
 
                     // Redirigir al usuario a la página principal o dashboard
                     header('Location: index.php');
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="px-4 py-2 mb-4">
           <a class="link-fx fw-bold" href="index.php">
             <i class="fa fa-fire"></i>
-            <span class="fs-4 text-body-color">Palop</span><span class="fs-4 text-body-color"> Asesores</span>
+            <span class="fs-4 text-body-color">Lopherca</span>
           </a>
           <h1 class="h3 fw-bold mt-4 mb-2">Bienvenido al Sistema</h1>
           <h2 class="h5 fw-medium text-muted mb-0">Porfavor ingrese sus datos</h2>

@@ -21,7 +21,7 @@
         <div class="py-5 text-center">
           <a class="link-fx fw-bold" href="index.php">
             <i class="fa fa-fire"></i>
-            <span class="fs-4 text-body-color">Palop</span><span class="fs-4 text-body-color"> Asesores</span>
+            <span class="fs-4 text-body-color">Lopherca</span>
           </a>
           <h1 class="h3 fw-extrabold mb-1 mt-4">Welcome to your new web app installation</h1>
           <h2 class="fs-base fw-medium text-muted mb-0">Let's get started, it will only take a few seconds!</h2>

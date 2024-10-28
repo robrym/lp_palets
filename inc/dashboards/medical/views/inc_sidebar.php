@@ -23,7 +23,7 @@
         <a class="link-fx fw-bold tracking-wide mx-auto" href="index.php">
           <span class="smini-hidden">
             <i class="fa fa-fire text-primary"></i>
-            <span class="fs-4 text-dual">Palop</span><span class="fs-4 text-black"> Asesores</span>
+            <span class="fs-4 text-dual">Lopherca</span>
           </span>
         </a>
       </div>

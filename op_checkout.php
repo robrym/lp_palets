@@ -9,7 +9,7 @@
   <div class="py-5 text-center">
     <a class="link-fx fw-bold" href="index.php">
       <i class="fa fa-fire me-1"></i>
-      <span class="fs-4 text-body-color">Palop</span><span class="fs-4 text-body-color"> Asesores</span>
+      <span class="fs-4 text-body-color">Lopherca</span>
     </a>
     <h1 class="fs-3 fw-bold mt-4 mb-2">
       Complete Payment

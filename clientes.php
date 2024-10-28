@@ -15,8 +15,8 @@
 // Verificar si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['generar_instalacion'])) {
   // Recoger los datos enviados desde el formulario
-  $nombre_cliente = $_POST['nombre_cliente'] ?? '';
-  $email_cliente = $_POST['email_cliente'] ?? '';
+  $nombre = $_POST['nombre'] ?? '';
+  $email = $_POST['email'] ?? '';
   $cif = $_POST['cif'] ?? '';
   $telefono = $_POST['telefono'] ?? '';
 
@@ -28,12 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['generar_instalacion'
       $cliente_id = (int)$_POST['cliente_id'];
 
       $cliente_id = (int)$_POST['cliente_id'];
-      $resultado = modificarCliente($cliente_id, $nombre_cliente, $email_cliente, $cif, $telefono);
+      $resultado = modificarCliente($cliente_id, $nombre, $email, $cif, $telefono);
       echo "<div class='alert alert-info'>{$resultado}</div>";
       
   } else {
       // Agregar nuevo cliente
-      $resultado = agregarCliente($nombre_cliente, $email_cliente, $cif, $telefono);
+      $resultado = agregarCliente($nombre, $email, $cif, $telefono);
       echo "<div class='alert alert-info'>{$resultado}</div>";
   }
 }
@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generar_instalacion']
   // Obtener los datos del cliente por su ID para usar el nombre
   $cliente = obtenerClientePorId($cliente_id);
   if ($cliente) {
-      $nombre_cliente = $cliente['nombre_cliente'];
-      $resultado = generarInstalacion($cliente_id, $nombre_cliente);
+      $nombre = $cliente['nombre'];
+      $resultado = generarInstalacion($cliente_id, $nombre);
       echo "<div class='alert alert-info'>{$resultado}</div>";
   } else {
       echo "<div class='alert alert-danger'>No se encontró el cliente.</div>";
@@ -109,8 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generar_instalacion']
                 <th class="d-none d-sm-table-cell"  style="text-align:center;">Email</th>
                 <th class="d-none d-sm-table-cell"  style="text-align:center;">CIF/NIF</th>
                 <th class="d-none d-sm-table-cell"  style="text-align:center;">Teléfono</th>
-                <th class="d-none d-sm-table-cell" style="width: 15%;text-align:center;">FacturaScript</th>
-                <th class="d-none d-sm-table-cell text-center" style="width: 15%;text-align:center;">Acceso</th>
+                <th class="d-none d-sm-table-cell" style="width: 15%;text-align:center;">Estado</th>
+         
                 <th class="d-none d-sm-table-cell text-center" style="width: 15%;text-align:center;">Acción</th>
             </tr>
         </thead>
@@ -119,31 +119,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generar_instalacion']
                 <?php foreach ($clientes as $cliente): ?>
                     <tr>
                         <td class="text-center"><?php echo htmlspecialchars($cliente['id']); ?></td>
-                        <td class="fw-semibold"><?php echo htmlspecialchars($cliente['nombre_cliente']); ?></td>
-                        <td class="d-none d-sm-table-cell"><?php echo htmlspecialchars($cliente['email_cliente']); ?></td>
+                        <td class="fw-semibold"><?php echo htmlspecialchars($cliente['nombre']); ?></td>
+                        <td class="d-none d-sm-table-cell"><?php echo htmlspecialchars($cliente['email']); ?></td>
                         <td><?= htmlspecialchars($cliente['cif']) ?></td>
                         <td><?= htmlspecialchars($cliente['telefono']) ?></td>
                         <td class="d-none d-sm-table-cell" style="text-align:center;">
-                            <?php if ($cliente['tiene_facturacion']): ?>
-                                <span class="badge bg-success">Instalado</span>
+                            <?php if ($cliente['estado']): ?>
+                                <span class="badge bg-success">Activo</span>
                             <?php else: ?>
-                                <span class="badge bg-danger">Sin Instalar</span>
+                                <span class="badge bg-danger">Inactivo</span>
                             <?php endif; ?>
                         </td>
-                        <td class="d-none d-sm-table-cell text-center">
-                            <?php if (!empty($cliente['url_instalacion'])): ?>
-                                <span class="badge bg-primary"><?php echo htmlspecialchars($cliente['url_instalacion']); ?></span>
-                                <span class="badge bg-warning">admin / admin</span>
-                            <?php else: ?>
-                                <span class="badge bg-secondary">Sin URL</span>
-                            <?php endif; ?>
-                        </td>
+                     
                         <td class="d-none d-sm-table-cell text-center">
 
                         <button type="button" class="btn btn-sm btn-secondary js-bs-tooltip-enabled"  data-bs-toggle="modal" data-bs-target="#modalCliente"
                                 data-id="<?= htmlspecialchars($cliente['id']) ?>"
-                                data-nombre="<?= htmlspecialchars($cliente['nombre_cliente']) ?>"
-                                data-email="<?= htmlspecialchars($cliente['email_cliente']) ?>"
+                                data-nombre="<?= htmlspecialchars($cliente['nombre']) ?>"
+                                data-email="<?= htmlspecialchars($cliente['email']) ?>"
                                 data-cif="<?= htmlspecialchars($cliente['cif']) ?>"
                                 data-telefono="<?= htmlspecialchars($cliente['telefono']) ?>">
                           <i class="fa fa-pencil-alt"></i>
@@ -151,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generar_instalacion']
                         
                           
                           
-                          <?php if (!$cliente['tiene_facturacion']): ?>
+                          <?php if (!$cliente['estado']): ?>
                               <form method="POST" action="clientes.php" class="d-inline">
                                   <input type="hidden" name="cliente_id" value="<?php echo $cliente['id']; ?>">
                                  
@@ -198,12 +191,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generar_instalacion']
                             <div class="col-lg-12">
                                 <input type="hidden" id="cliente_id" name="cliente_id">
                                 <div class="mb-4">
-                                    <label class="form-label" for="nombre_cliente">Nombre del Cliente</label>
-                                    <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" placeholder="Ingrese el nombre del cliente" required>
+                                    <label class="form-label" for="nombre">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre del cliente" required>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label" for="email_cliente">Email</label>
-                                    <input type="email" class="form-control" id="email_cliente" name="email_cliente" placeholder="Ingrese el email del cliente" required>
+                                    <label class="form-label" for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Ingrese el email del cliente" required>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label" for="cif">CIF</label>
@@ -267,8 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Rellenar los campos del formulario en el modal
         modalCliente.querySelector('#cliente_id').value = clienteId || '';
-        modalCliente.querySelector('#nombre_cliente').value = nombre || '';
-        modalCliente.querySelector('#email_cliente').value = email || '';
+        modalCliente.querySelector('#nombre').value = nombre || '';
+        modalCliente.querySelector('#email').value = email || '';
         modalCliente.querySelector('#cif').value = cif || '';
         modalCliente.querySelector('#telefono').value = telefono || '';
         

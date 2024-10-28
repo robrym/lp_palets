@@ -1,7 +1,7 @@
 <?php
 // Configuración de la base de datos
 $host = 'localhost'; // Dirección del servidor de la base de datos
-$dbname = 'palop'; // Nombre de la base de datos
+$dbname = 'gestion'; // Nombre de la base de datos
 $username = 'root'; // Usuario de la base de datos
 $password = ''; // Contraseña del usuario de la base de datos
  

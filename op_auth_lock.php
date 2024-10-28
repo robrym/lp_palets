@@ -10,7 +10,7 @@
     <div class="py-4 px-1 text-center mb-4">
       <a class="link-fx fw-bold" href="index.php">
         <i class="fa fa-fire"></i>
-        <span class="fs-4 text-body-color">Palop</span><span class="fs-4 text-body-color"> Asesores</span>
+        <span class="fs-4 text-body-color">Lopherca</span>
       </a>
       <h1 class="h3 fw-bold mt-5 mb-2">Welcome back, Admin</h1>
       <h2 class="h5 fw-normal text-muted mb-4">Please enter your password</h2>

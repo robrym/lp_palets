@@ -9,7 +9,10 @@
  */
 
 
-require 'funciones.php';
+require 'clientes.php';
+require 'usuarios.php';
+require 'almacenes.php';
+require 'palets.php';
 // **************************************************************************************************
 // INCLUDED VIEWS
 // **************************************************************************************************
@@ -50,13 +53,25 @@ $cb->main_nav                   = array(
     
    
     array(
-        'name'  => 'Gestión de Clientes',
+        'name'  => 'Clientes',
         'icon'  => 'fa fa-list-alt',
         'sub'   => array(
            
             array(
                 'name'  => 'Clientes',
                 'url'   => 'clientes.php'
+            ),
+            array(
+                'name'  => 'Usuarios',
+                'url'   => 'usuarios.php'
+            ),
+            array(
+                'name'  => 'Almacenes',
+                'url'   => 'almacenes.php'
+            ),
+            array(
+                'name'  => 'Palets',
+                'url'   => 'palets.php'
             )
         )
     ),
