@@ -72,6 +72,14 @@ $cb->main_nav                   = array(
             array(
                 'name'  => 'Palets',
                 'url'   => 'palets.php'
+            ),
+            array(
+                'name'  => 'Movimientos',
+                'url'   => 'movimientos.php'
+            ),
+            array(
+                'name'  => 'Asignaciones',
+                'url'   => 'asignaciones.php'
             )
         )
     ),

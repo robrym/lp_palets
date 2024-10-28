@@ -32,8 +32,8 @@ $cb                             = new Template('Codebase', '5.9', 'assets');
 //                              : The data is added in the <head> section of the page
 $cb->author                     = 'Proyecta Informatica';
 $cb->robots                     = 'index, follow';
-$cb->title                      = 'Palop Asesores';
-$cb->description                = 'Sistema de alta y gestión de Instalaciones para Usuarios';
+$cb->title                      = 'Lopherca Logistica';
+$cb->description                = 'Sistema de alta y gestión de Palets';
 
 //                              : The url of your site, used in Open Graph Meta Data (eg 'https://example.com')
 $cb->og_url_site                = '';
