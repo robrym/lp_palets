@@ -14,27 +14,29 @@
 
 // Verificar si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $nfc_identifier = $_POST['nfc_identifier'] ?? '';
-  $color = $_POST['color'] ?? '';
-  $status = $_POST['status'] ?? '';
+    $nfc_identifier = $_POST['nfc_identifier'] ?? '';
+    $tipo_palet = $_POST['tipo_palet'] ?? '';
+    $numero_serie = $_POST['numero_serie'] ?? '';
+    $numero_ciclos = $_POST['numero_ciclos'] ?? '';
+    $estado = $_POST['estado'] ?? 'disponible';
 
-  if (isset($_POST['palet_id']) && !empty($_POST['palet_id'])) {
-      // Modificar palet existente
-      $palet_id = (int)$_POST['palet_id'];
-      $resultado = modificarPalet($palet_id, $nfc_identifier, $color, $status);
-      echo "<div class='alert alert-info'>{$resultado}</div>";
-  } else {
-      // Agregar nuevo palet
-      $resultado = agregarPalet($nfc_identifier, $color, $status);
-      echo "<div class='alert alert-info'>{$resultado}</div>";
-  }
+    if (isset($_POST['palet_id']) && !empty($_POST['palet_id'])) {
+        // Modificar palet existente
+        $palet_id = (int)$_POST['palet_id'];
+        $resultado = modificarPalet($palet_id, $nfc_identifier, $tipo_palet, $numero_serie, $estado, $numero_ciclos);
+        echo "<div class='alert alert-info'>{$resultado}</div>";
+    } else {
+        // Agregar nuevo palet
+        $resultado = agregarPalet($nfc_identifier, $tipo_palet, $numero_serie, $numero_ciclos, 0, $estado, 1); // '1' es el stock inicial
+        echo "<div class='alert alert-info'>{$resultado}</div>";
+    }
 }
 
 // Verificar si se ha enviado una solicitud para eliminar un palet
 if (isset($_GET['delete_id'])) {
-  $palet_id = (int)$_GET['delete_id'];
-  $resultado = borrarPalet($palet_id);
-  echo "<div class='alert alert-info'>{$resultado}</div>";
+    $palet_id = (int)$_GET['delete_id'];
+    $resultado = borrarPalet($palet_id);
+    echo "<div class='alert alert-info'>{$resultado}</div>";
 }
 
 ?>
@@ -48,73 +50,83 @@ if (isset($_GET['delete_id'])) {
     <div class="block-content block-content-full overflow-x-auto">
       <div class="py-3 text-center">
         <h1 class="h3 fw-extrabold mb-1">Palets</h1>
-        <h2 class="fs-sm fw-medium text-muted mb-0">Vista generada automáticamente</h2>
+        <h2 class="fs-sm fw-medium text-muted mb-0">Vista general de los palets</h2>
       </div>
     </div>
   </div>
   <!-- END Heading -->
 
   <!-- Dynamic Table Full -->
-  <div class="block block-rounded">
-    <div class="block-header block-header-default">
-      <h3 class="block-title">
-        <div class="col-md-6 col-xl-3">
-          <button type="button" class="btn btn-alt-primary" data-bs-toggle="modal" data-bs-target="#modalPalet"><i class="fa fa-plus opacity-50 me-1"></i> Palet</button>
-        </div>
-      </h3>
-    </div>
-    <div class="block-content block-content-full overflow-x-auto">
-      <table class="table table-bordered table-striped table-vcenter js-dataTable-full">
-        <thead>
-            <tr>
-                <th class="text-center">#</th>
-                <th class="d-none d-sm-table-cell" style="text-align:center;">Identificador NFC</th>
-                <th class="d-none d-sm-table-cell" style="text-align:center;">Color</th>
-                <th class="d-none d-sm-table-cell" style="width: 15%; text-align:center;">Estado</th>
-                <th class="d-none d-sm-table-cell text-center" style="width: 15%; text-align:center;">Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($palets)): ?>
-                <?php foreach ($palets as $palet): ?>
-                    <tr>
-                        <td class="text-center"><?php echo htmlspecialchars($palet['id']); ?></td>
-                        <td><?php echo htmlspecialchars($palet['nfc_identifier']); ?></td>
-                        <td><?php echo htmlspecialchars($palet['color']); ?></td>
-                        <td class="d-none d-sm-table-cell" style="text-align:center;">
-                            <?php if ($palet['status'] === 'activo'): ?>
-                                <span class="badge bg-success">Activo</span>
-                            <?php else: ?>
-                                <span class="badge bg-danger">Inactivo</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="d-none d-sm-table-cell text-center">
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalPalet"
-                                    data-id="<?php echo htmlspecialchars($palet['id']); ?>"
-                                    data-nfc_identifier="<?php echo htmlspecialchars($palet['nfc_identifier']); ?>"
-                                    data-color="<?php echo htmlspecialchars($palet['color']); ?>"
-                                    data-status="<?php echo htmlspecialchars($palet['status']); ?>">
-                                <i class="fa fa-pencil-alt"></i>
-                            </button>
-                            <a href="palets.php?delete_id=<?php echo $palet['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este palet?');">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="5" class="text-center">No hay palets registrados.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-      </table>
-    </div>
+<div class="block block-rounded">
+  <div class="block-header block-header-default">
+    <h3 class="block-title">
+      <div class="col-md-6 col-xl-3">
+        <button type="button" class="btn btn-alt-primary" data-bs-toggle="modal" data-bs-target="#modalPalet">
+          <i class="fa fa-plus opacity-50 me-1"></i> Agregar Palet
+        </button>
+      </div>
+    </h3>
   </div>
-  <!-- END Dynamic Table Full -->
+  <div class="block-content block-content-full overflow-x-auto">
+    <table class="table table-bordered table-striped table-vcenter js-dataTable-full">
+      <thead>
+          <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Tipo de Palet</th>
+              <th class="text-center">Número de Serie</th>
+              <th class="text-center">Fecha de Construcción</th>
+              <th class="text-center">Ciclos Restantes</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Veces en Circulación</th>
+              <th class="text-center">Acción</th>
+          </tr>
+      </thead>
+      <tbody>
+          <?php if (!empty($palets)): ?>
+              <?php foreach ($palets as $palet): ?>
+                  <tr>
+                      <td class="text-center"><?php echo htmlspecialchars($palet['id']); ?></td>
+                      <td class="text-center"><?php echo htmlspecialchars($palet['tipo_palet']); ?></td>
+                      <td class="text-center"><?php echo htmlspecialchars($palet['numero_serie']); ?></td>
+                      <td class="text-center"><?php echo htmlspecialchars($palet['fecha_construccion']); ?></td>
+                      <td class="text-center"><?php echo htmlspecialchars($palet['numero_ciclos']); ?></td>
+                      <td class="text-center">
+                          <span class="badge bg-<?php echo $palet['estado'] === 'disponible' ? 'success' : 'warning'; ?>">
+                              <?php echo htmlspecialchars(ucfirst($palet['estado'])); ?>
+                          </span>
+                      </td>
+                      <td class="text-center"><?php echo htmlspecialchars($palet['veces_en_circulacion']); ?></td>
+                      <td class="text-center">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalPalet"
+                                  data-id="<?php echo htmlspecialchars($palet['id']); ?>"
+                                  data-tipo_palet="<?php echo htmlspecialchars($palet['tipo_palet']); ?>"
+                                  data-numero_serie="<?php echo htmlspecialchars($palet['numero_serie']); ?>"
+                                  data-fecha_construccion="<?php echo htmlspecialchars($palet['fecha_construccion']); ?>"
+                                  data-numero_ciclos="<?php echo htmlspecialchars($palet['numero_ciclos']); ?>"
+                                  data-estado="<?php echo htmlspecialchars($palet['estado']); ?>"
+                                  data-veces_en_circulacion="<?php echo htmlspecialchars($palet['veces_en_circulacion']); ?>">
+                              <i class="fa fa-pencil-alt"></i>
+                          </button>
+                          <a href="palets.php?delete_id=<?php echo $palet['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este palet?');">
+                              <i class="fa fa-trash"></i>
+                          </a>
+                      </td>
+                  </tr>
+              <?php endforeach; ?>
+          <?php else: ?>
+              <tr>
+                  <td colspan="8" class="text-center">No hay palets registrados.</td>
+              </tr>
+          <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- END Dynamic Table Full -->
+
+
 </div>
 <!-- END Page Content -->
-
 <!-- Form Modal Palet -->
 <div class="modal fade" id="modalPalet" tabindex="-1" role="dialog" aria-labelledby="modalPalet" aria-hidden="true">
   <div class="modal-dialog modal-dialog-fromright" role="document">
@@ -131,25 +143,34 @@ if (isset($_GET['delete_id'])) {
             <div class="row push">
               <div class="col-lg-12">
                 <input type="hidden" id="palet_id" name="palet_id">
+                
+                <input type="text" id="numero_serie" name="numero_serie">
+
+                <!-- Campo para Tipo de Palet -->
                 <div class="mb-4">
-                  <label class="form-label" for="nfc_identifier">Identificador NFC</label>
-                  <input type="text" class="form-control" id="nfc_identifier" name="nfc_identifier" placeholder="Ingrese el identificador NFC" required>
-                </div>
-                <div class="mb-4">
-                  <label class="form-label" for="color">Color</label>
-                  <select class="form-control" id="color" name="color" required>
-                    <option value="Rojo">Rojo</option>
-                    <option value="Blanco">Blanco</option>
-                    <option value="Azul">Azul</option>
-                    <option value="Amarillo">Amarillo</option>
-                    <option value="Calabaza">Calabaza</option>
+                  <label class="form-label" for="tipo_palet">Tipo de Palet</label>
+                  <select class="form-control" id="tipo_palet" name="tipo_palet" required>
+                    <option value="Americano">Americano</option>
+                    <option value="Europeo">Europeo</option>
+                    <option value="Otro">Otro</option>
                   </select>
                 </div>
+
+                <!-- Campo para Número de Ciclos -->
                 <div class="mb-4">
-                  <label class="form-label" for="status">Estado</label>
-                  <select class="form-control" id="status" name="status" required>
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
+                  <label class="form-label" for="numero_ciclos">Número de Ciclos</label>
+                  <input type="number" class="form-control" id="numero_ciclos" name="numero_ciclos" placeholder="Número de Ciclos" required>
+                </div>
+
+                <!-- Campo para Estado -->
+                <div class="mb-4">
+                  <label class="form-label" for="estado">Estado</label>
+                  <select class="form-control" id="estado" name="estado" required>
+                    <option value="disponible">Disponible</option>
+                    <option value="en_transito">En Tránsito</option>
+                    <option value="en_descontaminacion">En Descontaminación</option>
+                    <option value="reservado">Reservado</option>
+                    <option value="vencido">Vencido</option>
                   </select>
                 </div>
               </div>
@@ -167,6 +188,8 @@ if (isset($_GET['delete_id'])) {
   </div>
 </div>
 <!-- END Form Modal Palet -->
+
+
 
 <?php require 'inc/_global/views/page_end.php'; ?>
 <?php require 'inc/_global/views/footer_start.php'; ?>
@@ -196,14 +219,18 @@ document.addEventListener('DOMContentLoaded', function() {
     modalPalet.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const paletId = button.getAttribute('data-id');
-        const nfcIdentifier = button.getAttribute('data-nfc_identifier');
-        const color = button.getAttribute('data-color');
-        const status = button.getAttribute('data-status');
+        //const nfcIdentifier = button.getAttribute('data-nfc_identifier');
+        const tipoPalet = button.getAttribute('data-tipo_palet');
+        const numeroSerie = button.getAttribute('data-numero_serie');
+        const estado = button.getAttribute('data-estado');
+        const numeroCiclos = button.getAttribute('data-numero_ciclos');
 
         modalPalet.querySelector('#palet_id').value = paletId || '';
-        modalPalet.querySelector('#nfc_identifier').value = nfcIdentifier || '';
-        modalPalet.querySelector('#color').value = color || '';
-        modalPalet.querySelector('#status').value = status || '';
+        //modalPalet.querySelector('#nfc_identifier').value = nfcIdentifier || '';
+        modalPalet.querySelector('#tipo_palet').value = tipoPalet || '';
+        modalPalet.querySelector('#numero_serie').value = numeroSerie || '';
+        modalPalet.querySelector('#estado').value = estado || '';
+        modalPalet.querySelector('#numero_ciclos').value = numeroCiclos || '';
     });
 });
 </script>
