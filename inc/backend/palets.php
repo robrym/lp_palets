@@ -35,18 +35,6 @@ function obtenerPaletPorId($palet_id)
 /**
  * Agrega un nuevo palet a la base de datos.
  *
- * @param string $nfc_identifier Identificador NFC del palet.
- * @param string $tipo_palet Tipo de palet (ej.: Americano, Europeo).
- * @param string $numero_serie Número de serie único del palet.
- * @param int $numero_ciclos Número de ciclos asignados al palet.
- * @param int $veces_en_circulacion Contador de veces en circulación.
- * @param string $estado Estado del palet.
- * @param int $stock Stock del palet.
- * @return string Mensaje de éxito o error.
- */
-/**
- * Agrega un nuevo palet a la base de datos.
- *
  * @param string $tipo_palet Tipo de palet (ej.: Americano, Europeo).
  * @param int $numero_ciclos Número de ciclos asignados al palet.
  * @param int $veces_en_circulacion Contador de veces en circulación.
@@ -63,7 +51,7 @@ function agregarPalet($tipo_palet, $numero_ciclos, $veces_en_circulacion, $estad
 
     try {
         $query = "INSERT INTO palets (nfc_identifier, tipo_palet, numero_serie, fecha_construccion, numero_ciclos, veces_en_circulacion, estado, stock)
-                  VALUES (:numero_serie, :tipo_palet, :numero_serie, NOW(), :numero_ciclos, :veces_en_circulacion, :estado, :stock)";
+        VALUES (:numero_serie, :tipo_palet, :numero_serie, NOW(), :numero_ciclos, :veces_en_circulacion, :estado, :stock)";
         $stmt = $conexion->prepare($query);
         $stmt->bindParam(':numero_serie', $numero_serie); // Usamos el mismo valor para nfc_identifier y numero_serie
         $stmt->bindParam(':tipo_palet', $tipo_palet);
@@ -84,14 +72,14 @@ function agregarPalet($tipo_palet, $numero_ciclos, $veces_en_circulacion, $estad
  * Modifica un palet existente en la base de datos.
  *
  * @param int $palet_id ID del palet.
- * @param string $nfc_identifier Identificador NFC del palet.
+
  * @param string $tipo_palet Tipo de palet.
- * @param string $numero_serie Número de serie del palet.
+
  * @param string $estado Estado del palet.
  * @param int $numero_ciclos Número de ciclos asignados.
  * @return string Mensaje de éxito o error.
  */
-function modificarPalet($palet_id, $nfc_identifier, $tipo_palet, $numero_serie, $estado, $numero_ciclos)
+function modificarPalet($palet_id, $tipo_palet, $estado, $numero_ciclos)
 {
     global $conexion;
 
@@ -105,9 +93,9 @@ function modificarPalet($palet_id, $nfc_identifier, $tipo_palet, $numero_serie, 
                   WHERE id = :palet_id";
         $stmt = $conexion->prepare($query);
         $stmt->bindParam(':palet_id', $palet_id, PDO::PARAM_INT);
-        $stmt->bindParam(':nfc_identifier', $nfc_identifier);
+       
         $stmt->bindParam(':tipo_palet', $tipo_palet);
-        $stmt->bindParam(':numero_serie', $numero_serie);
+       
         $stmt->bindParam(':estado', $estado);
         $stmt->bindParam(':numero_ciclos', $numero_ciclos, PDO::PARAM_INT);
         $stmt->execute();

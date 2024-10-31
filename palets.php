@@ -23,11 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['palet_id']) && !empty($_POST['palet_id'])) {
         // Modificar palet existente
         $palet_id = (int)$_POST['palet_id'];
-        $resultado = modificarPalet($palet_id, $nfc_identifier, $tipo_palet, $numero_serie, $estado, $numero_ciclos);
+        $resultado = modificarPalet($palet_id, $tipo_palet,  $estado, $numero_ciclos);
         echo "<div class='alert alert-info'>{$resultado}</div>";
     } else {
         // Agregar nuevo palet
-        $resultado = agregarPalet($nfc_identifier, $tipo_palet, $numero_serie, $numero_ciclos, 0, $estado, 1); // '1' es el stock inicial
+        $resultado = agregarPalet($tipo_palet, $numero_ciclos, 0, $estado, 1); // '1' es el stock inicial
         echo "<div class='alert alert-info'>{$resultado}</div>";
     }
 }
@@ -73,6 +73,7 @@ if (isset($_GET['delete_id'])) {
           <tr>
               <th class="text-center">#</th>
               <th class="text-center">Tipo de Palet</th>
+              <th class="text-center">Color</th>
               <th class="text-center">Número de Serie</th>
               <th class="text-center">Fecha de Construcción</th>
               <th class="text-center">Ciclos Restantes</th>
@@ -87,6 +88,11 @@ if (isset($_GET['delete_id'])) {
                   <tr>
                       <td class="text-center"><?php echo htmlspecialchars($palet['id']); ?></td>
                       <td class="text-center"><?php echo htmlspecialchars($palet['tipo_palet']); ?></td>
+                      <td class="text-center">
+                          <span class="badge bg-info">
+                              <?php echo htmlspecialchars(ucfirst($palet['color'])); ?>
+                          </span>
+                      </td>
                       <td class="text-center"><?php echo htmlspecialchars($palet['numero_serie']); ?></td>
                       <td class="text-center"><?php echo htmlspecialchars($palet['fecha_construccion']); ?></td>
                       <td class="text-center"><?php echo htmlspecialchars($palet['numero_ciclos']); ?></td>
@@ -101,6 +107,7 @@ if (isset($_GET['delete_id'])) {
                                   data-id="<?php echo htmlspecialchars($palet['id']); ?>"
                                   data-tipo_palet="<?php echo htmlspecialchars($palet['tipo_palet']); ?>"
                                   data-numero_serie="<?php echo htmlspecialchars($palet['numero_serie']); ?>"
+                                    data-color="<?php echo htmlspecialchars($palet['color']); ?>"
                                   data-fecha_construccion="<?php echo htmlspecialchars($palet['fecha_construccion']); ?>"
                                   data-numero_ciclos="<?php echo htmlspecialchars($palet['numero_ciclos']); ?>"
                                   data-estado="<?php echo htmlspecialchars($palet['estado']); ?>"
@@ -144,7 +151,7 @@ if (isset($_GET['delete_id'])) {
               <div class="col-lg-12">
                 <input type="hidden" id="palet_id" name="palet_id">
                 
-                <input type="text" id="numero_serie" name="numero_serie">
+                <input type="hidden" id="numero_serie" name="numero_serie">
 
                 <!-- Campo para Tipo de Palet -->
                 <div class="mb-4">
@@ -155,6 +162,20 @@ if (isset($_GET['delete_id'])) {
                     <option value="Otro">Otro</option>
                   </select>
                 </div>
+
+                  <!-- Campo para Tipo de Palet -->
+                  <div class="mb-4">
+                  <label class="form-label" for="color">Color</label>
+                  <select class="form-control" id="color" name="color" required>
+                    <option value="Rojo">Rojo</option>
+                    <option value="Blanco">Blanco</option>
+                    <option value="Azul">Azul</option>
+                    <option value="Amarillo">Amarillo</option>
+                    <option value="Calabaza">Calabaza</option>
+                  </select>
+                </div>
+
+              
 
                 <!-- Campo para Número de Ciclos -->
                 <div class="mb-4">
