@@ -8,46 +8,50 @@ require 'inc/_global/database.php';
  * @return array Lista de palets.
  */
 
-function obtenerPalets($tipo_palet = null, $estado = null, $fecha_inicio = null, $fecha_fin = null)
-{
-    global $conexion;
-    $query = "SELECT * FROM palets WHERE 1=1"; // WHERE 1=1 para concatenar condiciones de forma segura
-
-    // Condiciones según los filtros
-    if ($tipo_palet) {
-        $query .= " AND tipo_palet = :tipo_palet";
-    }
-    if ($estado) {
-        $query .= " AND estado = :estado";
-    }
-    if ($fecha_inicio && $fecha_fin) {
-        $query .= " AND fecha_construccion BETWEEN :fecha_inicio AND :fecha_fin";
-    } elseif ($fecha_inicio) {
-        $query .= " AND fecha_construccion >= :fecha_inicio";
-    } elseif ($fecha_fin) {
-        $query .= " AND fecha_construccion <= :fecha_fin";
-    }
-
-    $stmt = $conexion->prepare($query);
-
-    // Asignación de parámetros
-    if ($tipo_palet) {
-        $stmt->bindParam(':tipo_palet', $tipo_palet);
-    }
-    if ($estado) {
-        $stmt->bindParam(':estado', $estado);
-    }
-    if ($fecha_inicio) {
-        $stmt->bindParam(':fecha_inicio', $fecha_inicio);
-    }
-    if ($fecha_fin) {
-        $stmt->bindParam(':fecha_fin', $fecha_fin);
-    }
-
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
+ function obtenerPalets($tipo_palet = null, $estado = null, $fecha_inicio = null, $fecha_fin = null)
+ {
+     global $conexion;
+     $query = "
+         SELECT p.*, cp.cliente_id
+         FROM palets p
+         LEFT JOIN clientes_palets cp ON p.id = cp.palet_id AND cp.fecha_fin IS NULL
+         WHERE 1=1
+     ";
+ 
+     // Agregar condiciones según los filtros
+     if ($tipo_palet) {
+         $query .= " AND p.tipo_palet = :tipo_palet";
+     }
+     if ($estado) {
+         $query .= " AND p.estado = :estado";
+     }
+     if ($fecha_inicio && $fecha_fin) {
+         $query .= " AND p.fecha_construccion BETWEEN :fecha_inicio AND :fecha_fin";
+     } elseif ($fecha_inicio) {
+         $query .= " AND p.fecha_construccion >= :fecha_inicio";
+     } elseif ($fecha_fin) {
+         $query .= " AND p.fecha_construccion <= :fecha_fin";
+     }
+ 
+     $stmt = $conexion->prepare($query);
+ 
+     // Asignación de parámetros
+     if ($tipo_palet) {
+         $stmt->bindParam(':tipo_palet', $tipo_palet);
+     }
+     if ($estado) {
+         $stmt->bindParam(':estado', $estado);
+     }
+     if ($fecha_inicio) {
+         $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+     }
+     if ($fecha_fin) {
+         $stmt->bindParam(':fecha_fin', $fecha_fin);
+     }
+ 
+     $stmt->execute();
+     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+ }
 
 
 
@@ -65,6 +69,20 @@ function obtenerPaletPorId($palet_id)
     $stmt->bindParam(':id', $palet_id, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Obtiene todos los clientes desde la base de datos.
+ *
+ * @return array Lista de clientes.
+ */
+function obtenerClientesParaPalets()
+{
+    global $conexion;
+    $query = "SELECT id, nombre FROM clientes"; // Selecciona solo los campos necesarios
+    $stmt = $conexion->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 /**

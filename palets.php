@@ -158,6 +158,20 @@ $palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
                       </td>
                       <td class="text-center"><?php echo htmlspecialchars($palet['veces_en_circulacion']); ?></td>
                       <td class="text-center">
+                           <!-- Botón de Asignación de Cliente -->
+                          <?php if (!$palet['cliente_id']): // Solo mostrar el botón si el palet no está asignado ?>
+                              <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalAsignarCliente"
+                                      data-id="<?php echo htmlspecialchars($palet['id']); ?>">
+                                  <i class="fa fa-user-plus"></i>
+                              </button>
+                          <?php endif; ?>
+
+                          <!-- Botón de Historial de Movimientos -->
+                          <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalHistorial"
+                                  data-id="<?php echo htmlspecialchars($palet['id']); ?>">
+                              <i class="fa fa-history"></i> 
+                          </button>
+                          
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalPalet"
                                   data-id="<?php echo htmlspecialchars($palet['id']); ?>"
                                   data-tipo_palet="<?php echo htmlspecialchars($palet['tipo_palet']); ?>"
@@ -263,6 +277,70 @@ $palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
 </div>
 <!-- END Form Modal Palet -->
 
+<!-- Modal para Asignar Palet a un Cliente -->
+<div class="modal fade" id="modalAsignarCliente" tabindex="-1" role="dialog" aria-labelledby="modalAsignarClienteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAsignarClienteLabel">Asignar Palet a Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <?php
+        $clientes = obtenerClientesParaPalets();
+      ?>
+        <form id="formAsignarCliente">
+          <input type="hidden" id="palet_id" name="palet_id">
+          <div class="mb-3">
+            <label for="cliente_id" class="form-label">Seleccionar Cliente</label>
+            <select id="cliente_id" name="cliente_id" class="form-select" required>
+              <!-- Opciones de clientes cargadas dinámicamente por AJAX -->
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Asignar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Ver el Historial del Palet -->
+<div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalHistorialLabel">Historial de Palet</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Pestañas para el historial -->
+        <ul class="nav nav-tabs" id="historialTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="asignaciones-tab" data-bs-toggle="tab" href="#asignaciones" role="tab">Asignaciones</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="movimientos-tab" data-bs-toggle="tab" href="#movimientos" role="tab">Movimientos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="descontaminaciones-tab" data-bs-toggle="tab" href="#descontaminaciones" role="tab">Descontaminaciones</a>
+          </li>
+        </ul>
+        <!-- Contenido de cada pestaña -->
+        <div class="tab-content mt-3" id="historialTabContent">
+          <div class="tab-pane fade show active" id="asignaciones" role="tabpanel">
+            <!-- Contenido de asignaciones cargado por AJAX -->
+          </div>
+          <div class="tab-pane fade" id="movimientos" role="tabpanel">
+            <!-- Contenido de movimientos cargado por AJAX -->
+          </div>
+          <div class="tab-pane fade" id="descontaminaciones" role="tabpanel">
+            <!-- Contenido de descontaminaciones cargado por AJAX -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <?php require 'inc/_global/views/page_end.php'; ?>
@@ -307,6 +385,47 @@ document.addEventListener('DOMContentLoaded', function() {
         modalPalet.querySelector('#numero_ciclos').value = numeroCiclos || '';
     });
 });
+
 </script>
+<script>
+// Obtener lista de clientes para asignar
+$.ajax({
+    url: 'inc/backend/api_get.php?action=obtener_clientes',
+    method: 'GET',
+    success: function(response) {
+        // Manejar los datos de clientes en el modal
+    }
+});
+
+// Asignar un cliente a un palet
+$('#formAsignarCliente').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+        url: 'api_get.php?action=asignar_cliente',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            alert(response.success || response.error);
+            $('#modalAsignarCliente').modal('hide');
+            location.reload();
+        }
+    });
+});
+
+// Obtener historial del palet
+function obtenerHistorial(palet_id, tipo) {
+    $.ajax({
+        url: 'api_get.php',
+        method: 'GET',
+        data: { action: 'obtener_historial', palet_id: palet_id, tipo: tipo },
+        success: function(response) {
+            // Actualizar el contenido del historial en el modal
+        }
+    });
+}
+
+
+</script>
+
 
 <?php require 'inc/_global/views/footer_end.php'; ?>
