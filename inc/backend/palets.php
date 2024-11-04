@@ -7,14 +7,49 @@ require 'inc/_global/database.php';
  *
  * @return array Lista de palets.
  */
-function obtenerPalets()
+
+function obtenerPalets($tipo_palet = null, $estado = null, $fecha_inicio = null, $fecha_fin = null)
 {
     global $conexion;
-    $query = "SELECT * FROM palets"; // Consulta con SELECT *
+    $query = "SELECT * FROM palets WHERE 1=1"; // WHERE 1=1 para concatenar condiciones de forma segura
+
+    // Condiciones según los filtros
+    if ($tipo_palet) {
+        $query .= " AND tipo_palet = :tipo_palet";
+    }
+    if ($estado) {
+        $query .= " AND estado = :estado";
+    }
+    if ($fecha_inicio && $fecha_fin) {
+        $query .= " AND fecha_construccion BETWEEN :fecha_inicio AND :fecha_fin";
+    } elseif ($fecha_inicio) {
+        $query .= " AND fecha_construccion >= :fecha_inicio";
+    } elseif ($fecha_fin) {
+        $query .= " AND fecha_construccion <= :fecha_fin";
+    }
+
     $stmt = $conexion->prepare($query);
+
+    // Asignación de parámetros
+    if ($tipo_palet) {
+        $stmt->bindParam(':tipo_palet', $tipo_palet);
+    }
+    if ($estado) {
+        $stmt->bindParam(':estado', $estado);
+    }
+    if ($fecha_inicio) {
+        $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+    }
+    if ($fecha_fin) {
+        $stmt->bindParam(':fecha_fin', $fecha_fin);
+    }
+
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+
 
 /**
  * Obtiene los datos de un palet por su ID.

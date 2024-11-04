@@ -41,21 +41,76 @@ if (isset($_GET['delete_id'])) {
 
 ?>
 
-<?php $palets = obtenerPalets(); ?>
+<?php 
+
+// Captura de parámetros de filtro
+$tipo_palet = isset($_GET['tipo_palet']) ? $_GET['tipo_palet'] : null;
+$estado = isset($_GET['estado']) ? $_GET['estado'] : null;
+$fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : null;
+$fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : null;
+
+$palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
+
+?>
 
 <!-- Page Content -->
 <div class="content">
-  <!-- Heading -->
+ 
+<!-- Filtros de Búsqueda -->
+
   <div class="block block-rounded">
     <div class="block-content block-content-full overflow-x-auto">
-      <div class="py-3 text-center">
+
+    <div class="py-3 text-center">
         <h1 class="h3 fw-extrabold mb-1">Palets</h1>
-        <h2 class="fs-sm fw-medium text-muted mb-0">Vista general de los palets</h2>
+        
       </div>
+
+      <form action="palets.php" method="GET" class="row g-3">
+        <!-- Filtro por Tipo de Palet -->
+        <div class="col-md-3">
+          <label for="tipo_palet" class="form-label">Tipo de Palet</label>
+          <select id="tipo_palet" name="tipo_palet" class="form-select">
+            <option value="">Todos</option>
+            <option value="Americano" <?php echo (isset($_GET['tipo_palet']) && $_GET['tipo_palet'] == 'Americano') ? 'selected' : ''; ?>>Americano</option>
+            <option value="Europeo" <?php echo (isset($_GET['tipo_palet']) && $_GET['tipo_palet'] == 'Europeo') ? 'selected' : ''; ?>>Europeo</option>
+            <option value="Otro" <?php echo (isset($_GET['tipo_palet']) && $_GET['tipo_palet'] == 'Otro') ? 'selected' : ''; ?>>Otro</option>
+          </select>
+        </div>
+
+        <!-- Filtro por Estado -->
+        <div class="col-md-3">
+          <label for="estado" class="form-label">Estado</label>
+          <select id="estado" name="estado" class="form-select">
+            <option value="">Todos</option>
+            <option value="disponible" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'disponible') ? 'selected' : ''; ?>>Disponible</option>
+            <option value="en_transito" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'en_transito') ? 'selected' : ''; ?>>En Tránsito</option>
+            <option value="en_descontaminacion" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'en_descontaminacion') ? 'selected' : ''; ?>>En Descontaminación</option>
+            <option value="reservado" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'reservado') ? 'selected' : ''; ?>>Reservado</option>
+            <option value="vencido" <?php echo (isset($_GET['estado']) && $_GET['estado'] == 'vencido') ? 'selected' : ''; ?>>Vencido</option>
+          </select>
+        </div>
+
+        <!-- Filtro por Rango de Fecha de Construcción -->
+        <div class="col-md-3">
+          <label for="fecha_inicio" class="form-label">Fecha de Construcción (Desde)</label>
+          <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" value="<?php echo isset($_GET['fecha_inicio']) ? htmlspecialchars($_GET['fecha_inicio']) : ''; ?>">
+        </div>
+        <div class="col-md-3">
+          <label for="fecha_fin" class="form-label">Fecha de Construcción (Hasta)</label>
+          <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="<?php echo isset($_GET['fecha_fin']) ? htmlspecialchars($_GET['fecha_fin']) : ''; ?>">
+        </div>
+
+        <!-- Botón de Búsqueda -->
+        <div class="col-md-12 text-end">
+          <button type="submit" class="btn btn-primary">Buscar</button>
+          <a href="palets.php" class="btn btn-secondary">Limpiar Filtros</a>
+        </div>
+      </form>
     </div>
   </div>
-  <!-- END Heading -->
 
+<!-- END Filtros de Búsqueda -->
   <!-- Dynamic Table Full -->
 <div class="block block-rounded">
   <div class="block-header block-header-default">
@@ -120,11 +175,9 @@ if (isset($_GET['delete_id'])) {
                       </td>
                   </tr>
               <?php endforeach; ?>
-          <?php else: ?>
-              <tr>
-                  <td colspan="8" class="text-center">No hay palets registrados.</td>
-              </tr>
-          <?php endif; ?>
+              <?php else: ?>
+               
+              <?php endif; ?>
       </tbody>
     </table>
   </div>
