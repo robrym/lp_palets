@@ -281,6 +281,7 @@ $palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
 <div class="modal fade" id="modalAsignarCliente" tabindex="-1" role="dialog" aria-labelledby="modalAsignarClienteLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
+      <div class="block block-rounded shadow-none mb-0">
       <div class="modal-header">
         <h5 class="modal-title" id="modalAsignarClienteLabel">Asignar Palet a Cliente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -294,11 +295,16 @@ $palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
           <div class="mb-3">
             <label for="cliente_id" class="form-label">Seleccionar Cliente</label>
             <select id="cliente_id" name="cliente_id" class="form-select" required>
-              <!-- Opciones de clientes cargadas dinámicamente por AJAX -->
+            <?php foreach ($clientes as $cliente): ?>
+                <option value="<?php echo htmlspecialchars($cliente['id']); ?>">
+                    <?php echo htmlspecialchars($cliente['nombre']); ?>
+                </option>
+            <?php endforeach; ?>
             </select>
           </div>
           <button type="submit" class="btn btn-primary">Asignar</button>
         </form>
+      </div>
       </div>
     </div>
   </div>
@@ -308,6 +314,7 @@ $palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
 <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
+    <div class="block block-rounded shadow-none mb-0">
       <div class="modal-header">
         <h5 class="modal-title" id="modalHistorialLabel">Historial de Palet</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -328,15 +335,61 @@ $palets = obtenerPalets($tipo_palet, $estado, $fecha_inicio, $fecha_fin);
         <!-- Contenido de cada pestaña -->
         <div class="tab-content mt-3" id="historialTabContent">
           <div class="tab-pane fade show active" id="asignaciones" role="tabpanel">
-            <!-- Contenido de asignaciones cargado por AJAX -->
+              
+          <table id="tablaAsignaciones" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>ID Asignación</th>
+                  <th>Cliente</th>
+                  <th>Fecha de Asignación</th>
+                  <th>Fecha de Fin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Datos falsos de ejemplo -->
+                <tr><td>1</td><td>Supermercados Floyd</td><td>2024-01-01</td><td>2024-01-22</td></tr>
+                <tr><td>2</td><td>Mercadona</td><td>2024-02-15</td><td>2024-07-15</td></tr>
+              </tbody>
+            </table>
+
           </div>
           <div class="tab-pane fade" id="movimientos" role="tabpanel">
-            <!-- Contenido de movimientos cargado por AJAX -->
+          <table id="tablaMovimientos" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>ID Movimiento</th>
+                  <th>Tipo de Movimiento</th>
+                  <th>Fecha</th>
+                  <th>Descripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Datos falsos de ejemplo -->
+                <tr><td>1</td><td>Entrada</td><td>2024-03-01</td><td>Entrada al almacén</td></tr>
+                <tr><td>2</td><td>Salida</td><td>2024-04-05</td><td>Salida del almacén</td></tr>
+              </tbody>
+            </table>
           </div>
           <div class="tab-pane fade" id="descontaminaciones" role="tabpanel">
-            <!-- Contenido de descontaminaciones cargado por AJAX -->
+          <table id="tablaDescontaminaciones" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>ID Descontaminación</th>
+                  <th>Operario</th>
+                  <th>Fecha de Inicio</th>
+                  <th>Fecha de Fin</th>
+                  <th>Condición</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Datos falsos de ejemplo -->
+                <tr><td>1</td><td>Robert Zambrano</td><td>2024-05-01</td><td>2024-05-03</td><td>Bueno</td></tr>
+                <tr><td>2</td><td>Robert Zambrano</td><td>2024-06-10</td><td>2024-06-12</td><td>Daños menores</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
